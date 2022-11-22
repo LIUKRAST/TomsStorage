@@ -7,6 +7,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import com.tom.storagemod.Config;
+import com.tom.storagemod.energy.CustomEnergyStorage;
+import com.tom.storagemod.tile.TileEntityStorageTerminal;
 import org.lwjgl.glfw.GLFW;
 
 import net.minecraft.ChatFormatting;
@@ -79,6 +82,9 @@ public abstract class GuiStorageTerminalBase<T extends ContainerStorageTerminal>
 	private IStoredItemStackComparator comparator = new ComparatorAmount(false);
 	protected static final ResourceLocation creativeInventoryTabs = new ResourceLocation("textures/gui/container/creative_inventory/tabs.png");
 	protected GuiButton buttonSortingType, buttonDirection, buttonSearchType, buttonCtrlMode;
+
+	private int storedEnergy = 0;
+	private int consumtion = 0;
 
 	public GuiStorageTerminalBase(T screenContainer, Inventory inv, Component titleIn) {
 		super(screenContainer, inv, titleIn);
@@ -307,6 +313,17 @@ public abstract class GuiStorageTerminalBase<T extends ContainerStorageTerminal>
 		if (buttonCtrlMode.isHoveredOrFocused()) {
 			renderComponentTooltip(st, Arrays.stream(I18n.get("tooltip.toms_storage.ctrlMode_" + buttonCtrlMode.state).split("\\\\")).map(TextComponent::new).collect(Collectors.toList()), mouseX, mouseY);
 		}
+
+		int h = this instanceof GuiCraftingTerminal ? 5 : 4;
+		Component text1 = new TranslatableComponent("toms_storage.tooltip.stored_energy", storedEnergy);
+		font.draw(st, text1, leftPos - 20 - font.width(text1), topPos + 18*h + 20, 0xFFFFFF);
+		Component text2 = new TranslatableComponent("toms_storage.tooltip.consume_energy", consumtion);
+		font.draw(st, text2, leftPos - 20 - font.width(text2), topPos + 18*h + 34, 0xFFFFFF);
+
+		RenderSystem.setShaderTexture(0, getGui());
+		this.blit(st, leftPos - 17, topPos + 18*h + 5, 227, 10, 14, 52);
+		int y = getEnergyStoredScaled(50);
+		this.blit(st, leftPos - 16, topPos + 18*h + 56 - y, 242, 11, 14, y);
 	}
 
 	protected int drawSlots(PoseStack st, int mouseX, int mouseY) {
@@ -611,8 +628,13 @@ public abstract class GuiStorageTerminalBase<T extends ContainerStorageTerminal>
 
 	@Override
 	public void receive(CompoundTag tag) {
-		menu.receiveClientNBTPacket(tag);
-		refreshItemList = true;
+		if (tag.contains("e")) {
+			storedEnergy = tag.getInt("e");
+			consumtion = tag.getInt("c");
+		} else {
+			menu.receiveClientNBTPacket(tag);
+			refreshItemList = true;
+		}
 	}
 
 	private FakeSlot fakeSlotUnderMouse = new FakeSlot();
@@ -646,5 +668,15 @@ public abstract class GuiStorageTerminalBase<T extends ContainerStorageTerminal>
 			return fakeSlotUnderMouse;
 		}
 		return null;
+	}
+
+	private int getEnergyStoredScaled(int pixels) {
+		int energyStored = storedEnergy;
+		int maxEnergy = Config.maxEnergyCapacity;
+		if (energyStored != 0 && maxEnergy != 0) {
+			return energyStored * pixels / maxEnergy;
+		} else {
+			return 0;
+		}
 	}
 }

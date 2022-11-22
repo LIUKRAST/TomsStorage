@@ -85,6 +85,7 @@
 	"chat.toms_storage.terminal_bound": "Bound Advanced Wireless Terminal",
 	"chat.toms_storage.terminal_invalid_block": "Invalid block",
 	"chat.toms_storage.terminal_out_of_range": "Terminal out of range",
+	"chat.toms_storage.terminal_out_of_energy": "Terminal out of energy",
 	"chat.toms_storage.inv_link_access_denied": "Access Denied",
 	
 	"tomsstorage.config.inventory_connector_range": "Inventory Connector Range",
@@ -97,5 +98,11 @@
 	"tomsstorage.config.adv_wireless_beacon_lvl_dim": "Adv Wireless terminal requied beacon level for cross dimensional access\nValue of 0 only requires a single beacon block nearby",
 	"tomsstorage.config.inv_link_beacon_lvl": "Advanced wireless terminal requied beacon level for infinite range",
 	"tomsstorage.config.inv_link_beacon_lvl_dim": "Advanced wireless terminal requied beacon level for infinite range",
-	"tomsstorage.config.inv_dup_scan_size": "Inventory Connector duplicate finder max slot count"
+	"tomsstorage.config.inv_dup_scan_size": "Inventory Connector duplicate finder max slot count",
+	"tomsstorage.config.max_energy_capacity": "Terminal energy capacity",
+	"tomsstorage.config.base_energy_consumption": "Base energy consumption per tick",
+	"tomsstorage.config.energy_consumption_per_item": "Energy consumption per item type per tick",
+
+	"toms_storage.tooltip.consume_energy": "Using %d RF/t",
+	"toms_storage.tooltip.stored_energy": "Stored %d RF"
 }

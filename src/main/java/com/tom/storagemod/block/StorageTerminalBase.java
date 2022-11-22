@@ -1,5 +1,7 @@
 package com.tom.storagemod.block;
 
+import com.tom.storagemod.TickerUtil;
+import com.tom.storagemod.tile.TileEntityStorageTerminal;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -11,12 +13,7 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.block.BaseEntityBlock;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Mirror;
-import net.minecraft.world.level.block.RenderShape;
-import net.minecraft.world.level.block.Rotation;
-import net.minecraft.world.level.block.SimpleWaterloggedBlock;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -32,9 +29,6 @@ import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-
-import com.tom.storagemod.TickerUtil;
-import com.tom.storagemod.tile.TileEntityStorageTerminal;
 
 public abstract class StorageTerminalBase extends BaseEntityBlock implements SimpleWaterloggedBlock {
 	public static final EnumProperty<TerminalPos> TERMINAL_POS = EnumProperty.create("pos", TerminalPos.class);
@@ -70,7 +64,9 @@ public abstract class StorageTerminalBase extends BaseEntityBlock implements Sim
 
 		BlockEntity blockEntity_1 = world.getBlockEntity(pos);
 		if (blockEntity_1 instanceof TileEntityStorageTerminal term) {
-			if(term.canInteractWith(player)) {
+			if (!term.hasEnergy()){
+				player.displayClientMessage(new TranslatableComponent("chat.toms_storage.terminal_out_of_energy"), true);
+			} else if(term.canInteractWith(player)) {
 				player.openMenu(term);
 			} else {
 				player.displayClientMessage(new TranslatableComponent("chat.toms_storage.terminal_out_of_range"), true);

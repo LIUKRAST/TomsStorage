@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.server.level.ServerPlayer;
@@ -186,7 +187,7 @@ public class ContainerStorageTerminal extends RecipeBookMenu<CraftingContainer> 
 
 	@Override
 	public boolean stillValid(Player playerIn) {
-		return te == null || te.canInteractWith(playerIn);
+		return te == null || te.canInteractWith(playerIn) && te.hasEnergy();
 	}
 
 	public final void scrollTo(float p_148329_1_) {
@@ -223,9 +224,23 @@ public class ContainerStorageTerminal extends RecipeBookMenu<CraftingContainer> 
 		public static final SlotAction[] VALUES = values();
 	}
 
+
+	private int lastConsumption = -1;
+	private int lastStoredEnergy = -1;
+
 	@Override
 	public void broadcastChanges() {
 		if(te == null)return;
+		// Energy
+		if (te.getConsumtion() != lastConsumption || te.getEnergyStored() != lastStoredEnergy) {
+			lastConsumption = te.getConsumtion();
+			lastStoredEnergy = te.getEnergyStored();
+			CompoundTag mainTag = new CompoundTag();
+			mainTag.putInt("c", lastConsumption);
+			mainTag.putInt("e", lastStoredEnergy);
+			NetworkHandler.sendTo((ServerPlayer) pinv.player, mainTag);
+		}
+		// Items
 		Map<StoredItemStack, Long> itemsCount = te.getStacks();
 		if(!this.itemsCount.equals(itemsCount)) {
 			ListTag list = new ListTag();

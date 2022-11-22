@@ -16,6 +16,7 @@ import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
 import net.minecraftforge.common.ForgeConfigSpec.ConfigValue;
 import net.minecraftforge.common.ForgeConfigSpec.IntValue;
+import net.minecraftforge.common.ForgeConfigSpec.DoubleValue;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.config.ModConfig.Type;
@@ -34,6 +35,9 @@ public class Config {
 	public static int wirelessTermBeaconLvl, wirelessTermBeaconLvlDim;
 	public static int invLinkBeaconLvl, invLinkBeaconLvlDim;
 	public static int invDupScanSize;
+	public static int maxEnergyCapacity;
+	public static int baseEnergyConsumption;
+	public static double energyConsumptionPerItem;
 
 	public static class Server {
 		public IntValue inventoryConnectorRange;
@@ -44,6 +48,9 @@ public class Config {
 		public IntValue wirelessTermBeaconLvl, wirelessTermBeaconLvlDim;
 		public IntValue invLinkBeaconLvl, invLinkBeaconLvlDim;
 		public IntValue invDupScanSize;
+		public IntValue maxEnergyCapacity;
+		public IntValue baseEnergyConsumption;
+		public DoubleValue energyConsumptionPerItem;
 
 		private Server(ForgeConfigSpec.Builder builder) {
 			inventoryConnectorRange = builder.comment("Inventory Connector Range").
@@ -90,6 +97,18 @@ public class Config {
 					"Value of 0 only disables").
 					translation("tomsstorage.config.inv_dup_scan_size").
 					defineInRange("invDupScanSize", 100, 0, Integer.MAX_VALUE);
+
+			maxEnergyCapacity = builder.comment("Terminal energy capacity").
+					translation("tomsstorage.config.max_energy_capacity").
+					defineInRange("maxEnergyCapacity", 32000, 0, Integer.MAX_VALUE);
+
+			baseEnergyConsumption = builder.comment("Base energy consumption per tick").
+					translation("tomsstorage.config.base_energy_consumption").
+					defineInRange("baseEnergyConsumption", 50, 0, Integer.MAX_VALUE);
+
+			energyConsumptionPerItem = builder.comment("Energy consumption per item type per tick").
+					translation("tomsstorage.config.energy_consumption_per_item").
+					defineInRange("energyConsumptionPerItem", 1, 0, Double.MAX_VALUE);
 		}
 	}
 
@@ -139,6 +158,9 @@ public class Config {
 			invLinkBeaconLvl = SERVER.invLinkBeaconLvl.get();
 			invLinkBeaconLvlDim = SERVER.invLinkBeaconLvlDim.get();
 			invDupScanSize = SERVER.invDupScanSize.get();
+			maxEnergyCapacity = SERVER.maxEnergyCapacity.get();
+			baseEnergyConsumption = SERVER.baseEnergyConsumption.get();
+			energyConsumptionPerItem = SERVER.energyConsumptionPerItem.get();
 		} else if(modConfig.getType() == Type.COMMON) {
 			multiblockInvs = COMMON.multiblockInvs.get().stream().map(ResourceLocation::new).map(ForgeRegistries.BLOCKS::getValue).
 					filter(e -> e != null && e != Blocks.AIR).collect(Collectors.toSet());

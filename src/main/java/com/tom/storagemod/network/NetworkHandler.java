@@ -3,10 +3,12 @@ package com.tom.storagemod.network;
 import java.util.function.Supplier;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 
+import net.minecraft.world.level.Level;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.network.NetworkRegistry;
@@ -25,6 +27,7 @@ public class NetworkHandler {
 			);
 	public static void init() {
 		INSTANCE.registerMessage(0, DataPacket.class, DataPacket::toBytes, DataPacket::new, NetworkHandler::handleData);
+		INSTANCE.registerMessage(1, EnergyPacket.class, EnergyPacket::toBytes, EnergyPacket::new, EnergyPacket::handle);
 		StorageMod.LOGGER.info("Initilaized Network Handler");
 	}
 
@@ -52,5 +55,9 @@ public class NetworkHandler {
 
 	public static void sendTo(ServerPlayer pl, CompoundTag tag) {
 		INSTANCE.send(PacketDistributor.PLAYER.with(() -> pl), new DataPacket(tag));
+	}
+
+	public static void sendToAll(Level level, BlockPos blockPos, EnergyPacket packet) {
+		INSTANCE.send(PacketDistributor.TRACKING_CHUNK.with(() -> level.getChunkAt(blockPos)), packet);
 	}
 }
