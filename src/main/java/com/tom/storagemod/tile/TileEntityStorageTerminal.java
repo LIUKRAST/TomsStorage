@@ -1,6 +1,7 @@
 package com.tom.storagemod.tile;
 
 //import com.simibubi.create.content.contraptions.goggles.IHaveGoggleInformation;
+
 import com.tom.storagemod.Config;
 import com.tom.storagemod.StorageMod;
 import com.tom.storagemod.StoredItemStack;
@@ -39,7 +40,6 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
 
@@ -244,10 +244,6 @@ public class TileEntityStorageTerminal extends BlockEntity implements MenuProvid
 
     public int getEnergyStored() {
         return battery.getEnergyStored();
-    }
-
-    public int getMaxEnergyStored() {
-        return battery.getMaxEnergyStored();
     }
 
     public int getConsumtion() {

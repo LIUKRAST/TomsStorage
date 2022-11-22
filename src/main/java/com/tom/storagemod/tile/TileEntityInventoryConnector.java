@@ -8,8 +8,12 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.function.Supplier;
 
+import com.tom.storagemod.energy.CustomEnergyStorage;
+import com.tom.storagemod.network.EnergyPacket;
+import com.tom.storagemod.network.NetworkHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -19,6 +23,8 @@ import net.minecraft.world.level.block.state.properties.ChestType;
 
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
@@ -29,11 +35,18 @@ import com.tom.storagemod.block.ITrim;
 import com.tom.storagemod.util.IProxy;
 import com.tom.storagemod.util.InfoHandler;
 import com.tom.storagemod.util.MultiItemHandler;
+import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nullable;
 
 public class TileEntityInventoryConnector extends BlockEntity implements TickableServer {
 	private MultiItemHandler handlers = new MultiItemHandler();
 	private List<LinkedInv> linkedInvs = new ArrayList<>();
 	private LazyOptional<IItemHandler> invHandler = LazyOptional.of(() -> handlers);
+	// Energy
+	public int energyClient = -1;
+	private final CustomEnergyStorage battery = new CustomEnergyStorage(1000, 1000, 1000);
+	private LazyOptional<IEnergyStorage> energy = LazyOptional.of(() -> battery);
 
 	public TileEntityInventoryConnector(BlockPos pos, BlockState state) {
 		super(StorageMod.connectorTile, pos, state);
@@ -41,6 +54,13 @@ public class TileEntityInventoryConnector extends BlockEntity implements Tickabl
 
 	@Override
 	public void updateServer() {
+		// Energy
+		pullEnergy();
+		if (energyClient != battery.getEnergyStored()) {
+			setChanged();
+			NetworkHandler.sendToAll(level, worldPosition, new EnergyPacket(worldPosition, getEnergyStored(), -1));
+			energyClient = battery.getEnergyStored();
+		}
 		long time = level.getGameTime();
 		if(time % 20 == 0) {
 			Stack<BlockPos> toCheck = new Stack<>();
@@ -167,6 +187,7 @@ public class TileEntityInventoryConnector extends BlockEntity implements Tickabl
 		if (!this.remove && cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
 			return getInventory().cast();
 		}
+		if (cap == CapabilityEnergy.ENERGY) return energy.cast();
 		return super.getCapability(cap, side);
 	}
 
@@ -212,5 +233,36 @@ public class TileEntityInventoryConnector extends BlockEntity implements Tickabl
 
 	public int getInvSize() {
 		return handlers.getSlots();
+	}
+
+	private void pullEnergy() {
+		for (int i = 0; (i < Direction.values().length) && (battery.getEnergyStored() < battery.getMaxEnergyStored()); i++) {
+			Direction facing = Direction.values()[i];
+			BlockEntity tileEntity = level.getBlockEntity(worldPosition.relative(facing));
+			if (tileEntity != null) {
+				tileEntity.getCapability(CapabilityEnergy.ENERGY, facing.getOpposite()).ifPresent(handler -> {
+					if (handler.canExtract()) {
+						int space = battery.getMaxEnergyStored() - battery.getEnergyStored();
+						int received = handler.extractEnergy(Math.min(battery.getMaxReceive(), space), false);
+						battery.modifyEnergyStored(received);
+						setChanged();
+					}
+				});
+			}
+		}
+	}
+
+	@Override
+	public void saveAdditional(CompoundTag compound) {
+		battery.writeToNBT(compound);
+	}
+
+	@Override
+	public void load(CompoundTag compound) {
+		battery.readFromNBT(compound);
+	}
+
+	public int getEnergyStored() {
+		return battery.getEnergyStored();
 	}
 }

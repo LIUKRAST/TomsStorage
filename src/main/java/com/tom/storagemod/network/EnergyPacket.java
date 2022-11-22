@@ -1,5 +1,6 @@
 package com.tom.storagemod.network;
 
+import com.tom.storagemod.tile.TileEntityInventoryConnector;
 import com.tom.storagemod.tile.TileEntityStorageTerminal;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -46,6 +47,9 @@ public class EnergyPacket {
 				if(level.getBlockEntity(packet.pos) instanceof TileEntityStorageTerminal terminal) {
 					terminal.energyClient = packet.currentEnergy;
 					terminal.consumtionClient = packet.consumption;
+				}
+				if(level.getBlockEntity(packet.pos) instanceof TileEntityInventoryConnector connector) {
+					connector.energyClient = packet.currentEnergy;
 				}
 			}
 		}
