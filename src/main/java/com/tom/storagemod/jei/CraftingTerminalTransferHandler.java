@@ -1,15 +1,15 @@
 package com.tom.storagemod.jei;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
+import com.tom.storagemod.registry.RegisterMenuTypes;
+import mezz.jei.api.recipe.RecipeType;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.inventory.MenuType;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
@@ -18,7 +18,7 @@ import net.minecraft.world.item.crafting.CraftingRecipe;
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import com.tom.storagemod.StoredItemStack;
-import com.tom.storagemod.gui.ContainerCraftingTerminal;
+import com.tom.storagemod.gui.CraftingTerminalMenu;
 
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.constants.VanillaTypes;
@@ -38,7 +38,7 @@ public class CraftingTerminalTransferHandler<C extends AbstractContainerMenu & I
 		@Override public IRecipeTransferError.Type getType() { return IRecipeTransferError.Type.INTERNAL; }
 	};
 	static {
-		containerClasses.add(ContainerCraftingTerminal.class);
+		containerClasses.add(CraftingTerminalMenu.class);
 	}
 
 	public CraftingTerminalTransferHandler(Class<C> containerClass, IRecipeTransferHandlerHelper helper) {
@@ -49,6 +49,17 @@ public class CraftingTerminalTransferHandler<C extends AbstractContainerMenu & I
 	@Override
 	public Class<C> getContainerClass() {
 		return containerClass;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public Optional<MenuType<C>> getMenuType() {
+		return Optional.of((MenuType<C>) RegisterMenuTypes.CRAFTING_TERMINAL);
+	}
+
+	@Override
+	public RecipeType<CraftingRecipe> getRecipeType() {
+		return RecipeTypes.CRAFTING;
 	}
 
 	@Override
@@ -119,7 +130,7 @@ public class CraftingTerminalTransferHandler<C extends AbstractContainerMenu & I
 			}
 
 			if(!missing.isEmpty()) {
-				return new TransferWarning(helper.createUserErrorForMissingSlots(new TranslatableComponent("tooltip.toms_storage.items_missing"), missing));
+				return new TransferWarning(helper.createUserErrorForMissingSlots(Component.translatable("tooltip.toms_storage.items_missing"), missing));
 			}
 		} else {
 			return ERROR_INSTANCE;
@@ -130,11 +141,6 @@ public class CraftingTerminalTransferHandler<C extends AbstractContainerMenu & I
 	public static void registerTransferHandlers(IRecipeTransferRegistration recipeTransferRegistry) {
 		for (int i = 0;i < containerClasses.size();i++)
 			recipeTransferRegistry.addRecipeTransferHandler(new CraftingTerminalTransferHandler(containerClasses.get(i), recipeTransferRegistry.getTransferHelper()), RecipeTypes.CRAFTING);
-	}
-
-	@Override
-	public Class<CraftingRecipe> getRecipeClass() {
-		return CraftingRecipe.class;
 	}
 
 	private static class TransferWarning implements IRecipeTransferError {

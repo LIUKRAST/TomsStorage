@@ -21,7 +21,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
@@ -35,22 +34,22 @@ import com.tom.storagemod.network.NetworkHandler;
 import com.tom.storagemod.util.RemoteConnections;
 import com.tom.storagemod.util.RemoteConnections.Channel;
 
-public class GuiInventoryLink extends AbstractContainerScreen<ContainerInventoryLink> implements IDataReceiver {
+public class GuiInventoryLink extends AbstractContainerScreen<InventoryLinkMenu> implements IDataReceiver {
 	protected static final ResourceLocation creativeInventoryTabs = new ResourceLocation("textures/gui/container/creative_inventory/tabs.png");
 	private static final ResourceLocation gui = new ResourceLocation("toms_storage", "textures/gui/inventory_link.png");
 	private static final int LINES = 7;
 	private EditBox textF;
-	private Map<UUID, Channel> connections = new HashMap<>();
+	private final Map<UUID, Channel> connections = new HashMap<>();
 	private UUID selected;
 	private int beaconLvl;
 	private GuiButton createBtn, deleteBtn, publicBtn, remoteBtn;
-	private List<ListEntry> listEntries = new ArrayList<>();
+	private final List<ListEntry> listEntries = new ArrayList<>();
 	private List<UUID> sortedList = new ArrayList<>();
 	protected float currentScroll;
 	protected boolean isScrolling;
 	protected boolean wasClicking;
 
-	public GuiInventoryLink(ContainerInventoryLink p_97741_, Inventory p_97742_, Component p_97743_) {
+	public GuiInventoryLink(InventoryLinkMenu p_97741_, Inventory p_97742_, Component p_97743_) {
 		super(p_97741_, p_97742_, p_97743_);
 	}
 
@@ -151,7 +150,7 @@ public class GuiInventoryLink extends AbstractContainerScreen<ContainerInventory
 			NetworkHandler.sendDataToServer(tag);
 		});
 		remoteBtn.texY = 32;
-		textF = new EditBox(font, leftPos + 13, topPos + 28, 105, font.lineHeight, new TranslatableComponent("narrator.toms_storage.inventory_link_channel"));
+		textF = new EditBox(font, leftPos + 13, topPos + 28, 105, font.lineHeight, Component.translatable("narrator.toms_storage.inventory_link_channel"));
 		textF.setMaxLength(50);
 		textF.setBordered(false);
 		textF.setVisible(true);
@@ -299,11 +298,11 @@ public class GuiInventoryLink extends AbstractContainerScreen<ContainerInventory
 		this.renderTooltip(st, mouseX, mouseY);
 
 		if (publicBtn.isHoveredOrFocused()) {
-			renderTooltip(st, new TranslatableComponent("tooltip.toms_storage.link_public_" + publicBtn.state), mouseX, mouseY);
+			renderTooltip(st, Component.translatable("tooltip.toms_storage.link_public_" + publicBtn.state), mouseX, mouseY);
 		}
 
 		if (remoteBtn.isHoveredOrFocused()) {
-			renderTooltip(st, new TranslatableComponent("tooltip.toms_storage.link_remote_" + remoteBtn.state), mouseX, mouseY);
+			renderTooltip(st, Component.translatable("tooltip.toms_storage.link_remote_" + remoteBtn.state), mouseX, mouseY);
 		}
 	}
 
@@ -313,7 +312,7 @@ public class GuiInventoryLink extends AbstractContainerScreen<ContainerInventory
 			this.onClose();
 			return true;
 		}
-		return !this.textF.keyPressed(p_keyPressed_1_, p_keyPressed_2_, p_keyPressed_3_) && !this.textF.canConsumeInput() ? super.keyPressed(p_keyPressed_1_, p_keyPressed_2_, p_keyPressed_3_) : true;
+		return this.textF.keyPressed(p_keyPressed_1_, p_keyPressed_2_, p_keyPressed_3_) || this.textF.canConsumeInput() || super.keyPressed(p_keyPressed_1_, p_keyPressed_2_, p_keyPressed_3_);
 	}
 
 	@Override

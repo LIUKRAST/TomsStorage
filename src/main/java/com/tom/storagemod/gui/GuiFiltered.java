@@ -9,10 +9,10 @@ import net.minecraft.world.entity.player.Inventory;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 
-public class GuiFiltered extends AbstractContainerScreen<ContainerFiltered> {
+public class GuiFiltered extends AbstractContainerScreen<FilteredMenu> {
 	private static final ResourceLocation DISPENSER_GUI_TEXTURES = new ResourceLocation("textures/gui/container/dispenser.png");
 
-	public GuiFiltered(ContainerFiltered container, Inventory playerInventory, Component textComponent) {
+	public GuiFiltered(FilteredMenu container, Inventory playerInventory, Component textComponent) {
 		super(container, playerInventory, textComponent);
 	}
 

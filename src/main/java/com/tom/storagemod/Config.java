@@ -169,13 +169,13 @@ public class Config {
 
 	@SubscribeEvent
 	public static void onLoad(final ModConfigEvent.Loading configEvent) {
-		StorageMod.LOGGER.info("Loaded Tom's Simple Storage config file {}", configEvent.getConfig().getFileName());
+		TomsStorage.LOGGER.info("Loaded Tom's Simple Storage config file {}", configEvent.getConfig().getFileName());
 		load(configEvent.getConfig());
 	}
 
 	@SubscribeEvent
 	public static void onFileChange(final ModConfigEvent.Reloading configEvent) {
-		StorageMod.LOGGER.info("Tom's Simple Storage config just got changed on the file system!");
+		TomsStorage.LOGGER.info("Tom's Simple Storage config just got changed on the file system!");
 		load(configEvent.getConfig());
 	}
 }

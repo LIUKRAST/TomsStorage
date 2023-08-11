@@ -1,9 +1,8 @@
 package com.tom.storagemod.gui;
 
-import java.lang.reflect.Field;
-
-import org.lwjgl.glfw.GLFW;
-
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.ImageButton;
@@ -12,21 +11,18 @@ import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
 import net.minecraft.client.gui.screens.recipebook.RecipeUpdateListener;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.StackedContents;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-
 import net.minecraftforge.fml.ModList;
+import org.lwjgl.glfw.GLFW;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
+import java.lang.reflect.Field;
 
-public class GuiCraftingTerminal extends GuiStorageTerminalBase<ContainerCraftingTerminal> implements RecipeUpdateListener {
+public class GuiCraftingTerminal extends GuiStorageTerminalBase<CraftingTerminalMenu> implements RecipeUpdateListener {
 	private static final ResourceLocation gui = new ResourceLocation("toms_storage", "textures/gui/crafting_terminal.png");
 	private static Field stackedContentsField, searchBarField, ghostRecipeField;
 	static {
@@ -55,7 +51,7 @@ public class GuiCraftingTerminal extends GuiStorageTerminalBase<ContainerCraftin
 	private GuiButton buttonPullFromInv;
 	private boolean pullFromInv;
 
-	public GuiCraftingTerminal(ContainerCraftingTerminal screenContainer, Inventory inv, Component titleIn) {
+	public GuiCraftingTerminal(CraftingTerminalMenu screenContainer, Inventory inv, Component titleIn) {
 		super(screenContainer, inv, titleIn);
 
 		recipeBookGui = new RecipeBookComponent();
@@ -186,7 +182,7 @@ public class GuiCraftingTerminal extends GuiStorageTerminalBase<ContainerCraftin
 		this.setInitialFocus(this.recipeBookGui);
 
 		if (buttonPullFromInv.isHoveredOrFocused()) {
-			renderTooltip(st, new TranslatableComponent("tooltip.toms_storage.pull_" + buttonPullFromInv.state), mouseX, mouseY);
+			renderTooltip(st, Component.translatable("tooltip.toms_storage.pull_" + buttonPullFromInv.state), mouseX, mouseY);
 		}
 	}
 

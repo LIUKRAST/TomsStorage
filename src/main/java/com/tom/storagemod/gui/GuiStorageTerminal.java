@@ -8,10 +8,10 @@ import net.minecraft.world.entity.player.Inventory;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 
-public class GuiStorageTerminal extends GuiStorageTerminalBase<ContainerStorageTerminal> {
+public class GuiStorageTerminal extends GuiStorageTerminalBase<StorageTerminalMenu> {
 	private static final ResourceLocation gui = new ResourceLocation("toms_storage", "textures/gui/storage_terminal.png");
 
-	public GuiStorageTerminal(ContainerStorageTerminal screenContainer, Inventory inv, Component titleIn) {
+	public GuiStorageTerminal(StorageTerminalMenu screenContainer, Inventory inv, Component titleIn) {
 		super(screenContainer, inv, titleIn);
 	}
 

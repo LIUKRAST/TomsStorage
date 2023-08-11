@@ -1,10 +1,9 @@
 package com.tom.storagemod.network;
 
-import com.tom.storagemod.tile.TileEntityInventoryConnector;
-import com.tom.storagemod.tile.TileEntityStorageTerminal;
+import com.tom.storagemod.blockEntity.InventoryConnectorBlockEntity;
+import com.tom.storagemod.blockEntity.StorageTerminalBlockEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkEvent;
@@ -44,11 +43,11 @@ public class EnergyPacket {
 		public static void handle(EnergyPacket packet, Supplier<NetworkEvent.Context> ctx) {
 			var level = Minecraft.getInstance().level;
 			if(level != null && level.isLoaded(packet.pos)) {
-				if(level.getBlockEntity(packet.pos) instanceof TileEntityStorageTerminal terminal) {
+				if(level.getBlockEntity(packet.pos) instanceof StorageTerminalBlockEntity terminal) {
 					terminal.energyClient = packet.currentEnergy;
 					terminal.consumtionClient = packet.consumption;
 				}
-				if(level.getBlockEntity(packet.pos) instanceof TileEntityInventoryConnector connector) {
+				if(level.getBlockEntity(packet.pos) instanceof InventoryConnectorBlockEntity connector) {
 					connector.energyClient = packet.currentEnergy;
 				}
 			}

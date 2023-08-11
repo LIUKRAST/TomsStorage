@@ -1,9 +1,11 @@
 package com.tom.storagemod.jei;
 
+import com.tom.storagemod.registry.RegisterBlockEntityTypes;
+import com.tom.storagemod.registry.RegisterBlocks;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
-import com.tom.storagemod.StorageMod;
+import com.tom.storagemod.TomsStorage;
 import com.tom.storagemod.gui.GuiCraftingTerminal;
 
 import mezz.jei.api.IModPlugin;
@@ -20,7 +22,7 @@ public class JEIHandler implements IModPlugin {
 
 	@Override
 	public ResourceLocation getPluginUid() {
-		return new ResourceLocation(StorageMod.modid, "jei");
+		return new ResourceLocation(TomsStorage.MOD_ID, "jei");
 	}
 
 	@Override
@@ -35,7 +37,7 @@ public class JEIHandler implements IModPlugin {
 
 	@Override
 	public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
-		registration.addRecipeCatalyst(new ItemStack(StorageMod.craftingTerminal), new RecipeType[] { RecipeTypes.CRAFTING });
+		registration.addRecipeCatalyst(new ItemStack(RegisterBlocks.CRAFTING_TERMINAL), new RecipeType[] { RecipeTypes.CRAFTING });
 	}
 	private static IJeiRuntime jeiRuntime;
 	@Override

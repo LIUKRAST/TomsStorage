@@ -15,12 +15,12 @@ import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
 
-import com.tom.storagemod.StorageMod;
+import com.tom.storagemod.TomsStorage;
 
 public class NetworkHandler {
 	private static final String PROTOCOL_VERSION = "1";
 	public static final SimpleChannel INSTANCE = NetworkRegistry.newSimpleChannel(
-			new ResourceLocation(StorageMod.modid, "main"),
+			new ResourceLocation(TomsStorage.MOD_ID, "main"),
 			() -> PROTOCOL_VERSION,
 			PROTOCOL_VERSION::equals,
 			PROTOCOL_VERSION::equals
@@ -28,7 +28,7 @@ public class NetworkHandler {
 	public static void init() {
 		INSTANCE.registerMessage(0, DataPacket.class, DataPacket::toBytes, DataPacket::new, NetworkHandler::handleData);
 		INSTANCE.registerMessage(1, EnergyPacket.class, EnergyPacket::toBytes, EnergyPacket::new, EnergyPacket::handle);
-		StorageMod.LOGGER.info("Initilaized Network Handler");
+		TomsStorage.LOGGER.info("Initilaized Network Handler");
 	}
 
 	public static void handleData(DataPacket packet, Supplier<NetworkEvent.Context> ctx) {
